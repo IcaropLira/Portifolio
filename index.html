@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ícaro Pinto Lira · Ciência da Computação, UFCG</title>
+<meta name="description" content="Portfólio de Ícaro Pinto Lira, estudante de Ciência da Computação na UFCG. Projetos web sincronizados com o GitHub e produção acadêmica.">
+<meta property="og:title" content="Ícaro Pinto Lira">
+<meta property="og:description" content="Ferramentas web para medir, calcular e contar. Estudante de Ciência da Computação na UFCG.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230E1B21'/%3E%3Cg fill='none' stroke='%23FF6B3D' stroke-width='3'%3E%3Cpath d='M32 12c11 0 20 8 20 19S43 52 30 52 12 43 12 32s9-20 20-20z'/%3E%3Cpath d='M32 23c6 0 11 4 11 9s-5 11-13 11-8-6-8-11 4-9 10-9z'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  /* ───────── Tokens ───────── */
+  :root{
+    --bg:#E8EDEE;
+    --surface:#F3F6F6;
+    --ink:#12222A;
+    --muted:#4A626D;
+    --line:rgba(18,34,42,.14);
+    --line-strong:rgba(18,34,42,.28);
+    --contour:rgba(38,84,102,.30);
+    --contour-strong:rgba(38,84,102,.58);
+    --accent:#D63C10;
+    --on-accent:#fff;
+    --ui:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+    --serif:"Newsreader",Georgia,"Times New Roman",serif;
+    --pad:clamp(20px,4vw,48px);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0E1B21;--surface:#13252D;--ink:#E4EDEF;--muted:#93AAB3;
+      --line:rgba(228,237,239,.13);--line-strong:rgba(228,237,239,.26);
+      --contour:rgba(120,190,210,.24);--contour-strong:rgba(120,190,210,.50);
+      --accent:#FF6B3D;--on-accent:#0E1B21;color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0E1B21;--surface:#13252D;--ink:#E4EDEF;--muted:#93AAB3;
+    --line:rgba(228,237,239,.13);--line-strong:rgba(228,237,239,.26);
+    --contour:rgba(120,190,210,.24);--contour-strong:rgba(120,190,210,.50);
+    --accent:#FF6B3D;--on-accent:#0E1B21;color-scheme:dark;
+  }
+
+  /* ───────── Base ───────── */
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:76px;-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 var(--ui);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  img,svg{max-width:100%}
+  a{color:inherit}
+  h1,h2,h3,h4,p,ul,ol,dl,dd{margin:0}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .wrap{max-width:1200px;margin:0 auto;padding-inline:var(--pad)}
+
+  /* ───────── Botões e chips ───────── */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:999px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font:600 .95rem/1 var(--ui);text-decoration:none;cursor:pointer;transition:background .18s,color .18s,border-color .18s}
+  .btn:hover{background:var(--ink);color:var(--bg)}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .btn-primary:hover{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .btn-small{padding:9px 16px;font-size:.85rem}
+  .chip{padding:7px 15px;border-radius:999px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font:500 .9rem/1 var(--ui);cursor:pointer;transition:background .15s,color .15s}
+  .chip:hover{border-color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+  /* ───────── Cabeçalho ───────── */
+  .site-header{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 84%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .site-header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .brand{font-weight:800;font-size:1.15rem;letter-spacing:-.02em;text-decoration:none;font-variation-settings:"wdth" 85}
+  .site-nav{display:flex;align-items:center;gap:clamp(14px,3vw,32px)}
+  .site-nav a{text-decoration:none;font-weight:500;font-size:.95rem;color:var(--muted);transition:color .15s}
+  .site-nav a:hover{color:var(--ink)}
+  .icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line-strong);background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer}
+  .icon-btn:hover{border-color:var(--ink)}
+
+  /* ───────── Hero ───────── */
+  .hero{position:relative;min-height:calc(100svh - 64px);min-height:max(560px,calc(100svh - 64px));display:flex;align-items:flex-end;overflow:hidden;border-bottom:1px solid var(--line)}
+  #terrain{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 1.8s ease}
+  #terrain.ready{opacity:1}
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,var(--bg) 0%,transparent 42%),linear-gradient(to right,color-mix(in srgb,var(--bg) 70%,transparent) 0%,transparent 55%)}
+  .hero-inner{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:32px 48px;padding-block:72px 56px}
+  h1{font-weight:800;font-variation-settings:"wdth" 78;font-size:clamp(4rem,15.5vw,12.5rem);line-height:.84;letter-spacing:-.045em}
+  .line{display:block;overflow:hidden;padding:.34em 0 .08em;margin-top:-.34em}
+  .line>span{display:block;animation:rise .95s cubic-bezier(.2,.75,.1,1) both}
+  .line:nth-child(2)>span{animation-delay:.12s}
+  @keyframes rise{from{transform:translateY(108%)}}
+  .lede{font-family:var(--serif);font-size:clamp(1.3rem,2.4vw,1.75rem);line-height:1.35;max-width:30ch;margin-top:28px}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+  .survey{border-left:1.5px solid var(--contour-strong);padding-left:20px;display:grid;gap:14px;font-size:.95rem}
+  .survey dt{color:var(--muted);font-size:.82rem}
+  .survey dd{font-weight:600;font-variant-numeric:tabular-nums}
+
+  /* ───────── Seções ───────── */
+  .section{padding-block:clamp(72px,11vw,128px)}
+  .section+.section{border-top:1px solid var(--line)}
+  .section-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px 32px}
+  h2{font-weight:750;font-size:clamp(2.2rem,5vw,3.6rem);line-height:1;letter-spacing:-.035em;font-variation-settings:"wdth" 85}
+  .sub{color:var(--muted);max-width:52ch}
+  h3.group{font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
+
+  /* ───────── Projetos no ar ───────── */
+  .live-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,460px),1fr));gap:56px 40px;margin-top:44px}
+  .site{display:flex;flex-direction:column;gap:22px;min-width:0}
+  .frame{position:relative;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden;background:var(--surface);transition:border-color .2s}
+  .site:hover .frame,.frame:focus-within{border-color:var(--accent)}
+  .frame-bar{display:flex;align-items:center;height:38px;padding:0 12px;border-bottom:1px solid var(--line)}
+  .frame-bar .url{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--bg);border-radius:999px;padding:4px 14px;font-size:.8rem;color:var(--muted)}
+  .frame-screen{position:relative;aspect-ratio:16/10;overflow:hidden;color:var(--contour-strong)}
+  .frame-screen .topo{position:absolute;inset:0}
+  .frame-screen .topo svg{width:100%;height:100%;display:block}
+  .frame-screen iframe{position:absolute;left:0;top:0;width:1280px;height:800px;border:0;background:#fff;transform-origin:0 0;transform:scale(var(--s,.35));opacity:0;transition:opacity .5s;pointer-events:none}
+  .frame-screen iframe.loaded{opacity:1}
+  .frame-hit{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;background:transparent;cursor:zoom-in}
+  .frame-hit span{position:absolute;right:12px;bottom:12px;background:var(--ink);color:var(--bg);font-weight:600;font-size:.82rem;padding:8px 14px;border-radius:999px;opacity:0;transform:translateY(4px);transition:opacity .18s,transform .18s}
+  .frame-hit:hover span,.frame-hit:focus-visible span{opacity:1;transform:none}
+  .site-body h3{font-size:clamp(1.5rem,2.6vw,1.9rem);font-weight:720;letter-spacing:-.025em;line-height:1.1}
+  .desc{font-family:var(--serif);font-size:1.1rem;line-height:1.5;color:var(--muted);margin-top:10px;max-width:56ch}
+  .meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;margin-top:14px;font-size:.85rem;color:var(--muted)}
+  .meta .host{border:1px solid var(--line-strong);border-radius:999px;padding:3px 11px;color:var(--ink);font-weight:500}
+  .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+
+  /* ───────── Lista de repositórios ───────── */
+  .repos-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px;margin-top:clamp(64px,9vw,104px)}
+  .filters{display:flex;flex-wrap:wrap;gap:8px}
+  .repo-list{list-style:none;padding:0;margin-top:24px;border-top:1px solid var(--line-strong)}
+  .row{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:8px 24px;align-items:center;padding:20px 0;border-bottom:1px solid var(--line)}
+  .row-thumb{align-self:start;width:88px;aspect-ratio:4/3;border-radius:6px;overflow:hidden;background:var(--surface);border:1px solid var(--line);color:var(--contour-strong)}
+  .row-thumb svg{width:100%;height:100%;display:block}
+  .row-main{min-width:0}
+  .row-main h4{font-size:1.2rem;font-weight:680;letter-spacing:-.015em}
+  .row-main h4 a{text-decoration:none}
+  .row-main h4 a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:4px}
+  .row-main .desc{margin-top:4px;font-size:1.02rem}
+  .row-actions{display:flex;gap:8px}
+  .empty,.notice{border:1px dashed var(--line-strong);border-radius:10px;padding:24px;color:var(--muted);font-family:var(--serif);font-size:1.1rem;max-width:64ch}
+  .notice{margin-top:24px;font-size:1rem}
+  .loading{margin-top:44px;color:var(--muted)}
+
+  /* ───────── Pesquisa e formação ───────── */
+  .research{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:48px 72px;margin-top:48px;align-items:start}
+  .acad-group+.acad-group{margin-top:48px}
+  .entries{list-style:none;padding:0;margin-top:16px;border-top:1px solid var(--line-strong)}
+  .entry{display:grid;grid-template-columns:130px minmax(0,1fr);gap:4px 24px;padding:18px 0;border-bottom:1px solid var(--line)}
+  .entry-when{font-size:.92rem;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:3px}
+  .entry-title{font-weight:650;font-size:1.1rem;line-height:1.3}
+  .entry-title a{text-underline-offset:4px}
+  .entry-place{font-family:var(--serif);font-size:1.05rem;color:var(--muted);margin-top:2px}
+  .entry-detail{font-family:var(--serif);font-size:1.02rem;margin-top:8px;max-width:60ch}
+  .lattes{border:1.5px solid var(--ink);border-radius:10px;padding:28px;position:sticky;top:92px}
+  .lattes h3{font-size:1.4rem;font-weight:720;letter-spacing:-.02em}
+  .lattes p{font-family:var(--serif);color:var(--muted);margin-top:8px;font-size:1.05rem}
+  .lattes .id{font-family:var(--ui);font-size:.9rem;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:16px}
+  .lattes .btn{margin-top:22px}
+
+  /* ───────── Contato ───────── */
+  .contact-list{list-style:none;padding:0;margin-top:40px;border-top:1px solid var(--line-strong)}
+  .contact-list li{border-bottom:1px solid var(--line)}
+  .contact-list a{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 24px;padding:22px 0;text-decoration:none;font-size:clamp(1.4rem,3.4vw,2.3rem);font-weight:680;letter-spacing:-.025em;font-variation-settings:"wdth" 88;transition:color .15s,padding-left .2s}
+  .contact-list a:hover{color:var(--accent);padding-left:10px}
+  .contact-list small{font-size:.95rem;font-weight:450;color:var(--muted);letter-spacing:0;font-variation-settings:"wdth" 100}
+
+  footer{border-top:1px solid var(--line);padding-block:32px 48px;color:var(--muted);font-size:.9rem}
+  footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 32px}
+
+  /* ───────── Visualizador ───────── */
+  dialog#viewer{width:min(1240px,96vw);height:min(880px,92vh);padding:0;border:1px solid var(--line-strong);border-radius:12px;background:var(--bg);color:var(--ink);overflow:hidden}
+  dialog#viewer[open]{display:flex;flex-direction:column}
+  dialog#viewer::backdrop{background:rgba(6,14,18,.66)}
+  .viewer-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 20px;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .viewer-title strong{display:block;font-size:1.1rem;font-weight:700;letter-spacing:-.01em}
+  .viewer-title span{font-size:.82rem;color:var(--muted)}
+  .viewer-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:999px;padding:3px}
+  .seg button{border:0;background:transparent;color:var(--ink);font:500 .82rem/1 var(--ui);padding:7px 14px;border-radius:999px;cursor:pointer}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  .viewer-stage{flex:1;min-height:0;display:flex;justify-content:center;background:var(--surface);overflow:auto}
+  .viewer-stage iframe{width:100%;height:100%;border:0;background:#fff}
+  .viewer-stage[data-device="mobile"] iframe{width:390px;max-width:100%;border-left:1px solid var(--line-strong);border-right:1px solid var(--line-strong)}
+  .viewer-hint{padding:9px 18px;font-size:.8rem;color:var(--muted);border-top:1px solid var(--line)}
+
+  /* ───────── Responsivo ───────── */
+  @media (max-width:860px){
+    .hero-inner{grid-template-columns:1fr}
+    .survey{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-left:0;border-top:1.5px solid var(--contour-strong);padding:16px 0 0}
+    .research{grid-template-columns:1fr}
+    .lattes{position:static}
+  }
+  @media (max-width:640px){
+    .row{grid-template-columns:64px minmax(0,1fr)}
+    .row-thumb{width:64px}
+    .row-actions{grid-column:2}
+    .entry{grid-template-columns:1fr}
+    .site-nav{gap:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .line>span{animation:none}
+    #terrain{transition:none}
+    .frame-hit span,.contact-list a,.frame-screen iframe{transition:none}
+  }
+</style>
+</head>
+
+<body id="top">
+<a class="sr-only" href="#projetos">Pular para os projetos</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top">Ícaro Lira</a>
+    <nav class="site-nav" aria-label="Principal">
+      <a href="#projetos">Projetos</a>
+      <a href="#pesquisa">Pesquisa</a>
+      <a href="#contato">Contato</a>
+      <button class="icon-btn" id="theme" type="button" aria-label="Alternar entre tema claro e escuro">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero" aria-label="Apresentação">
+    <canvas id="terrain" aria-hidden="true"></canvas>
+    <div class="wrap hero-inner">
+      <div>
+        <h1><span class="line"><span>Ícaro</span></span><span class="line"><span>Pinto Lira</span></span></h1>
+        <p class="lede" id="lede"></p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#projetos">Ver projetos</a>
+          <a class="btn" id="hero-lattes" href="#" target="_blank" rel="noopener">Currículo Lattes</a>
+          <a class="btn" id="hero-github" href="#" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+      <dl class="survey">
+        <div><dt>Local</dt><dd id="s-place">Campina Grande, Paraíba</dd></div>
+        <div><dt>Coordenadas</dt><dd>7°13′ S, 35°53′ W</dd></div>
+        <div><dt>Altitude</dt><dd>551 m</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" id="projetos">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Projetos</h2>
+        <p class="sub" id="stats" role="status">Buscando repositórios no GitHub…</p>
+      </div>
+
+      <div id="notice"></div>
+      <div class="live-grid" id="live-grid"></div>
+
+      <div class="repos-head">
+        <h3 class="group">Todos os repositórios</h3>
+        <div class="filters" id="filters" role="group" aria-label="Filtrar repositórios"></div>
+      </div>
+      <ul class="repo-list" id="repo-list"></ul>
+    </div>
+  </section>
+
+  <section class="section" id="pesquisa">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Pesquisa e formação</h2>
+        <p class="sub">O resumo fica aqui. A produção completa está no Lattes.</p>
+      </div>
+      <div class="research">
+        <div id="academic"></div>
+        <aside class="lattes" aria-label="Currículo Lattes">
+          <h3>Currículo Lattes</h3>
+          <p>Formação, projetos, publicações e eventos, atualizados direto na plataforma do CNPq.</p>
+          <p class="id" id="lattes-id"></p>
+          <a class="btn btn-primary" id="lattes-link" href="#" target="_blank" rel="noopener">Abrir no Lattes</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contato">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Contato</h2>
+        <p class="sub">Para colaborar, tirar dúvida sobre um projeto ou falar de pesquisa.</p>
+      </div>
+      <ul class="contact-list" id="contact-list"></ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span id="copyright"></span>
+    <span id="sync"></span>
+  </div>
+</footer>
+
+<dialog id="viewer" aria-labelledby="viewer-title">
+  <div class="viewer-head">
+    <div class="viewer-title"><strong id="viewer-title"></strong><span id="viewer-host"></span></div>
+    <div class="viewer-tools">
+      <div class="seg" role="group" aria-label="Tamanho da tela">
+        <button type="button" data-device="desktop" aria-pressed="true">Computador</button>
+        <button type="button" data-device="mobile" aria-pressed="false">Celular</button>
+      </div>
+      <a id="viewer-open" class="btn btn-primary btn-small" target="_blank" rel="noopener">Abrir em nova aba</a>
+      <button type="button" class="btn btn-small" id="viewer-close">Fechar</button>
+    </div>
+  </div>
+  <div class="viewer-stage" id="viewer-stage" data-device="desktop">
+    <iframe id="viewer-frame" title="Pré-visualização do projeto" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" referrerpolicy="no-referrer"></iframe>
+  </div>
+  <p class="viewer-hint">Se a página ficar em branco, o site não permite ser exibido dentro de outra página. Use “Abrir em nova aba”.</p>
+</dialog>
+
+<noscript><p class="wrap" style="padding-block:24px">Este portfólio precisa de JavaScript para carregar os projetos. Veja tudo direto em <a href="https://github.com/icaroplira">github.com/icaroplira</a>.</p></noscript>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONFIGURAÇÃO: é aqui que você edita o conteúdo do site.
+   ═══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  github: 'icaroplira',
+  name: 'Ícaro Pinto Lira',
+  lede: 'Estudante de Ciência da Computação na UFCG. Desenvolvedor de ferramentas e utilitários.',
+  place: 'Campina Grande, Paraíba',
+
+  lattes: {
+    url: 'http://lattes.cnpq.br/6203706384757208',
+    id: '6203706384757208'
+  },
+
+  // Deixe vazio para esconder.
+  email: '',
+  linkedin: '',
+
+  // Repositórios
+  showForks: false,
+  showArchived: false,
+  hide: [],   // nomes de repositórios para esconder, ex.: ['teste', 'estudos']
+  overrides: {
+    'Web_Topografica':  { title: 'Web Topográfica' },
+    'Web-Hidraulica':   { title: 'Web Hidráulica' },
+    'Stardew-Guia':     { title: 'Stardew Guia' },
+    'Calculadora-JoJa': { title: 'Calculadora JoJa' },
+    'CalculadoraJoja2': { title: 'Calculadora JoJa 2' },
+    'SaoJoaoContador':  { title: 'Contador do São João' }
+  },
+
+  /* Conteúdo do Lattes.
+     Grupos sem itens não aparecem. Cada item aceita:
+       { period: '2023 – 2024', title: 'Título', place: 'Instituição ou evento', detail: 'Descrição curta', link: 'https://...' } */
+  academic: [
+    { title: 'Formação', items: [
+      { period: 'Em curso', title: 'Ciência da Computação', place: 'Universidade Federal de Campina Grande (UFCG)' },
+      { period: 'Concluído', title: 'Técnico em Edificações', place: 'Instituto Federal da Paraíba (IFPB)' }
+
+    ]},
+    { title: 'Pesquisa e iniciação científica', items: [] },
+    { title: 'Publicações e apresentações',      items: [] },
+    { title: 'Extensão, monitoria e eventos',    items: [] }
+  ]
+};
+
+/* Lista de reserva: aparece só se a API do GitHub estiver fora do ar e não houver cache. */
+const FALLBACK = [
+  ['Web_Topografica','JavaScript',1,null],['Calculadora-JoJa','JavaScript',0,null],['Stardew-Guia','HTML',0,null],
+  ['Web-Hidraulica','HTML',0,null],
+  ['CalculadoraJoja2','TypeScript',0,'Calculadora de plantio, colheita e lucro para Stardew Valley: descubra quando cada plantação fica pronta e quanto ela realmente rende.'],
+  ['SaoJoaoContador','TypeScript',0,'Contador de dias até o São João']
+].map(([name,language,stars,description]) => ({
+  name, language, description, stargazers_count: stars, topics: [], homepage: null, has_pages: false,
+  fork: false, archived: false, pushed_at: null, html_url: `https://github.com/IcaropLira/${name}`, owner: { login: 'IcaropLira' }
+}));
+
+/* ═══════════════════════════════════════════════════════════════
+   Utilidades
+   ═══════════════════════════════════════════════════════════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const LANG_COLORS = {
+  JavaScript:'#f1e05a', TypeScript:'#3178c6', HTML:'#e34c26', CSS:'#7a5ad0', Python:'#3572A5', Java:'#b07219',
+  C:'#8a8a8a', 'C++':'#f34b7d', 'C#':'#3d9a2f', Shell:'#89e051', PHP:'#8892bf', Go:'#00ADD8', Rust:'#dea584',
+  Kotlin:'#A97BFF', Dart:'#00B4AB', Vue:'#41b883', Svelte:'#ff3e00', Jupyter:'#DA5B0B', 'Jupyter Notebook':'#DA5B0B'
+};
+const langColor = l => LANG_COLORS[l] || '#8fa3ab';
+
+const rtf = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto' });
+function ago(date) {
+  const s = (new Date(date) - Date.now()) / 1000;
+  for (const [u, n] of [['year',31536000],['month',2592000],['week',604800],['day',86400],['hour',3600],['minute',60]]) {
+    if (Math.abs(s) >= n) return rtf.format(Math.round(s / n), u);
+  }
+  return 'agora há pouco';
+}
+
+function prettify(name) {
+  return name.replace(/[-_]+/g, ' ').replace(/([a-zà-ú])([A-Z])/g, '$1 $2').trim();
+}
+
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* Curvas de nível geradas a partir do nome do repositório: cada projeto ganha o seu "relevo". */
+function closedPath(p) {
+  const n = p.length, f = v => v.toFixed(1);
+  let d = `M${f(p[0][0])} ${f(p[0][1])}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = p[(i - 1 + n) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
+    d += `C${f(p1[0] + (p2[0] - p0[0]) / 6)} ${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)} ${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])} ${f(p2[1])}`;
+  }
+  return d + 'Z';
+}
+function topoSVG(seed) {
+  const r = mulberry(hashStr(seed));
+  const cx = 25 + r() * 50, cy = 20 + r() * 35, ph = [r() * 6.28, r() * 6.28, r() * 6.28];
+  let paths = '';
+  for (let k = 1; k <= 10; k++) {
+    const R = k * 5, pts = [];
+    for (let a = 0; a < 20; a++) {
+      const t = a / 20 * Math.PI * 2;
+      const w = 1 + .22 * Math.sin(2 * t + ph[0]) + .14 * Math.sin(3 * t + ph[1]) + .08 * Math.sin(5 * t + ph[2]);
+      pts.push([cx + Math.cos(t) * R * w * 1.3, cy + Math.sin(t) * R * w]);
+    }
+    paths += `<path d="${closedPath(pts)}"${k % 4 === 0 ? ' stroke-width="1.5"' : ''}/>`;
+  }
+  return `<svg viewBox="0 0 100 75" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width=".8">${paths}</g></svg>`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Tema
+   ═══════════════════════════════════════════════════════════════ */
+(() => {
+  const root = document.documentElement;
+  try { const t = localStorage.getItem('portfolio:theme'); if (t) root.dataset.theme = t; } catch {}
+  $('#theme').addEventListener('click', () => {
+    const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.dataset.theme = dark ? 'light' : 'dark';
+    try { localStorage.setItem('portfolio:theme', root.dataset.theme); } catch {}
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   Terreno: curvas de nível vivas (marching squares sobre ruído 3D).
+   O cursor levanta um morro e as curvas se reorganizam ao redor.
+   ═══════════════════════════════════════════════════════════════ */
+(() => {
+  const canvas = $('#terrain'), ctx = canvas.getContext('2d'), hero = canvas.parentElement;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  let W = 0, H = 0, cell = 16, cols = 0, rows = 0, field = new Float32Array(0);
+  let cLine = '', cStrong = '';
+  let running = false, visible = true, last = 0;
+  const ptr = { x: -999, y: -999, tx: -999, ty: -999, amp: 0, ampT: 0 };
+
+  const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function h3(x, y, z) {
+    let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ Math.imul(z, 1440662683);
+    n = Math.imul(n ^ (n >>> 13), 1274126177);
+    return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+  }
+  function vn(x, y, z) {
+    const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z);
+    const u = fade(x - xi), v = fade(y - yi), w = fade(z - zi);
+    return lerp(
+      lerp(lerp(h3(xi, yi, zi), h3(xi + 1, yi, zi), u), lerp(h3(xi, yi + 1, zi), h3(xi + 1, yi + 1, zi), u), v),
+      lerp(lerp(h3(xi, yi, zi + 1), h3(xi + 1, yi, zi + 1), u), lerp(h3(xi, yi + 1, zi + 1), h3(xi + 1, yi + 1, zi + 1), u), v),
+      w);
+  }
+
+  function readColors() {
+    const cs = getComputedStyle(document.documentElement);
+    cLine = cs.getPropertyValue('--contour').trim();
+    cStrong = cs.getPropertyValue('--contour-strong').trim();
+  }
+
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    W = r.width; H = r.height;
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cell = W < 700 ? 14 : 16;
+    cols = Math.ceil(W / cell) + 2; rows = Math.ceil(H / cell) + 2;
+    field = new Float32Array(cols * rows);
+    draw(performance.now());
+  }
+
+  function draw(now) {
+    const z = reduce.matches ? 3.7 : now * 0.00005 + 3.7, sc = 1 / 400;
+    const bump = ptr.amp > 0.002;
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const x = i * cell, y = j * cell, nx = x * sc, ny = y * sc;
+        let v = .56 * vn(nx, ny, z) + .29 * vn(nx * 2.13 + 7.3, ny * 2.13 + 1.7, z * 1.5) + .15 * vn(nx * 4.4 + 3.1, ny * 4.4 + 9.2, z * 2.1);
+        if (bump) { const dx = x - ptr.x, dy = y - ptr.y; v += ptr.amp * Math.exp(-(dx * dx + dy * dy) / 33800); }
+        field[j * cols + i] = v;
+      }
+    }
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineJoin = 'round';
+    for (let k = 0; k < 18; k++) {
+      const l = 0.16 + k * 0.04, strong = k % 5 === 0;
+      ctx.beginPath();
+      for (let j = 0; j < rows - 1; j++) {
+        for (let i = 0; i < cols - 1; i++) {
+          const a = field[j * cols + i], b = field[j * cols + i + 1], c = field[(j + 1) * cols + i + 1], d = field[(j + 1) * cols + i];
+          const idx = (a > l ? 8 : 0) | (b > l ? 4 : 0) | (c > l ? 2 : 0) | (d > l ? 1 : 0);
+          if (idx === 0 || idx === 15) continue;
+          const tx = (i + (l - a) / (b - a)) * cell, ty = j * cell;
+          const rx = (i + 1) * cell, ry = (j + (l - b) / (c - b)) * cell;
+          const bx = (i + (l - d) / (c - d)) * cell, by = (j + 1) * cell;
+          const lx = i * cell, ly = (j + (l - a) / (d - a)) * cell;
+          const seg = (x1, y1, x2, y2) => { ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); };
+          switch (idx) {
+            case 1: case 14: seg(lx, ly, bx, by); break;
+            case 2: case 13: seg(bx, by, rx, ry); break;
+            case 3: case 12: seg(lx, ly, rx, ry); break;
+            case 4: case 11: seg(tx, ty, rx, ry); break;
+            case 5: seg(tx, ty, rx, ry); seg(lx, ly, bx, by); break;
+            case 6: case 9: seg(tx, ty, bx, by); break;
+            case 7: case 8: seg(tx, ty, lx, ly); break;
+            case 10: seg(tx, ty, lx, ly); seg(bx, by, rx, ry); break;
+          }
+        }
+      }
+      ctx.strokeStyle = strong ? cStrong : cLine;
+      ctx.lineWidth = strong ? 1.5 : 0.9;
+      ctx.stroke();
+    }
+    canvas.classList.add('ready');
+  }
+
+  function loop(now) {
+    if (!running) return;
+    requestAnimationFrame(loop);
+    if (now - last < 33) return;
+    last = now;
+    ptr.x += (ptr.tx - ptr.x) * .12; ptr.y += (ptr.ty - ptr.y) * .12;
+    ptr.amp += (ptr.ampT - ptr.amp) * .07;
+    draw(now);
+  }
+  function sync() {
+    const should = !reduce.matches && visible && !document.hidden;
+    if (should && !running) { running = true; requestAnimationFrame(loop); }
+    else if (!should) { running = false; }
+  }
+
+  hero.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse' || reduce.matches) return;
+    const r = canvas.getBoundingClientRect();
+    ptr.tx = e.clientX - r.left; ptr.ty = e.clientY - r.top;
+    if (ptr.amp < .01) { ptr.x = ptr.tx; ptr.y = ptr.ty; }
+    ptr.ampT = .24;
+  });
+  hero.addEventListener('pointerleave', () => { ptr.ampT = 0; });
+
+  readColors();
+  new ResizeObserver(resize).observe(canvas);
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; sync(); }).observe(hero);
+  document.addEventListener('visibilitychange', sync);
+  reduce.addEventListener('change', () => { sync(); draw(performance.now()); });
+  const recolor = () => { readColors(); draw(performance.now()); };
+  new MutationObserver(recolor).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', recolor);
+  sync();
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   GitHub
+   ═══════════════════════════════════════════════════════════════ */
+const CACHE_KEY = 'portfolio:gh:' + CONFIG.github;
+const TTL = 30 * 60 * 1000;
+const readCache = () => { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch { return null; } };
+const writeCache = data => { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch {} };
+
+async function loadRepos() {
+  const cached = readCache();
+  if (cached && Date.now() - cached.t < TTL) return { repos: cached.data, source: 'cache', t: cached.t };
+  try {
+    const res = await fetch(`https://api.github.com/users/${CONFIG.github}/repos?per_page=100&sort=pushed`, { headers: { Accept: 'application/vnd.github+json' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const repos = await res.json();
+    writeCache(repos);
+    return { repos, source: 'live', t: Date.now() };
+  } catch (err) {
+    if (cached) return { repos: cached.data, source: 'stale', t: cached.t };
+    return { repos: FALLBACK, source: 'fallback', t: null };
+  }
+}
+
+function cleanUrl(u) {
+  if (!u) return null;
+  try {
+    const url = new URL(/^https?:\/\//i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
+    if (!/^https?:$/.test(url.protocol)) return null;
+    if (/(^|\.)github\.com$/.test(url.hostname)) return null;
+    return url.href;
+  } catch { return null; }
+}
+
+function hostInfo(url) {
+  const host = new URL(url).hostname.replace(/^www\./, '');
+  let label = host;
+  if (host.endsWith('vercel.app')) label = 'Vercel';
+  else if (host.endsWith('github.io')) label = 'GitHub Pages';
+  else if (host.endsWith('netlify.app')) label = 'Netlify';
+  else if (host.endsWith('pages.dev')) label = 'Cloudflare Pages';
+  return { host, label };
+}
+
+function normalize(r) {
+  const o = CONFIG.overrides[r.name] || {};
+  let live = null;
+  if (o.live !== false) {
+    live = cleanUrl(o.live || r.homepage);
+    if (!live && r.has_pages) {
+      const user = r.owner.login.toLowerCase();
+      live = r.name.toLowerCase() === user + '.github.io' ? `https://${user}.github.io/` : `https://${user}.github.io/${r.name}/`;
+    }
+  }
+  const info = live ? hostInfo(live) : null;
+  return {
+    name: r.name,
+    title: o.title || prettify(r.name),
+    desc: o.description ?? r.description ?? '',
+    repo: r.html_url,
+    live, host: info?.host, label: info?.label,
+    preview: o.preview !== false,
+    featured: !!o.featured,
+    lang: r.language, stars: r.stargazers_count || 0,
+    pushed: r.pushed_at, topics: r.topics || []
+  };
+}
+
+function buildItems(repos) {
+  return repos
+    .filter(r => !r.private && (CONFIG.showForks || !r.fork) && (CONFIG.showArchived || !r.archived))
+    .filter(r => !CONFIG.hide.includes(r.name) && r.name.toLowerCase() !== CONFIG.github.toLowerCase())
+    .map(normalize)
+    .sort((a, b) => (b.featured - a.featured) || (new Date(b.pushed || 0) - new Date(a.pushed || 0)));
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Renderização
+   ═══════════════════════════════════════════════════════════════ */
+const state = { items: [], lang: 'Todos', liveOnly: false };
+
+function metaLine(it, withHost) {
+  const bits = [];
+  if (withHost && it.label) bits.push(`<span class="host">${esc(it.label)}</span>`);
+  if (it.lang) bits.push(`<span><i class="dot" style="background:${langColor(it.lang)}"></i>${esc(it.lang)}</span>`);
+  if (it.stars) bits.push(`<span>${it.stars} ${it.stars === 1 ? 'estrela' : 'estrelas'}</span>`);
+  if (it.pushed) bits.push(`<span>Atualizado ${ago(it.pushed)}</span>`);
+  return bits.join('');
+}
+
+function renderLive() {
+  const grid = $('#live-grid');
+  const live = state.items.map((it, i) => ({ it, i })).filter(x => x.it.live);
+  if (!live.length) {
+    grid.innerHTML = `<p class="empty">Nenhum projeto com site publicado ainda. Preencha o campo <strong>Website</strong> do repositório no GitHub (ou ative o GitHub Pages) e ele aparece aqui sozinho, com pré-visualização ao vivo.</p>`;
+    return;
+  }
+  grid.innerHTML = live.map(({ it, i }) => `
+    <article class="site">
+      <div class="frame">
+        <div class="frame-bar"><span class="url">${esc(it.host)}</span></div>
+        <div class="frame-screen">
+          <div class="topo">${topoSVG(it.name)}</div>
+          ${it.preview ? `<iframe data-src="${esc(it.live)}" title="Prévia de ${esc(it.title)}" tabindex="-1" inert loading="lazy" sandbox="allow-scripts allow-same-origin" referrerpolicy="no-referrer"></iframe>` : ''}
+          <button class="frame-hit" type="button" data-view="${i}" aria-label="Ver ${esc(it.title)} ao vivo"><span>Ver ao vivo</span></button>
+        </div>
+      </div>
+      <div class="site-body">
+        <h3>${esc(it.title)}</h3>
+        ${it.desc ? `<p class="desc">${esc(it.desc)}</p>` : ''}
+        <div class="meta">${metaLine(it, true)}</div>
+        <div class="links">
+          <a class="btn btn-primary btn-small" href="${esc(it.live)}" target="_blank" rel="noopener">Abrir site</a>
+          <a class="btn btn-small" href="${esc(it.repo)}" target="_blank" rel="noopener">Código-fonte</a>
+        </div>
+      </div>
+    </article>`).join('');
+  hydratePreviews();
+}
+
+function hydratePreviews() {
+  const scale = new ResizeObserver(entries => {
+    for (const e of entries) e.target.style.setProperty('--s', (e.contentRect.width / 1280).toFixed(4));
+  });
+  const loader = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      const f = e.target.querySelector('iframe');
+      if (f && f.dataset.src) {
+        f.addEventListener('load', () => f.classList.add('loaded'), { once: true });
+        f.src = f.dataset.src; delete f.dataset.src;
+      }
+      loader.unobserve(e.target);
+    }
+  }, { rootMargin: '300px' });
+  document.querySelectorAll('.frame-screen').forEach(el => { scale.observe(el); loader.observe(el); });
+}
+
+function renderFilters() {
+  const langs = [...new Set(state.items.map(i => i.lang).filter(Boolean))].sort();
+  const hasLive = state.items.some(i => i.live);
+  const chips = [['Todos', 'lang'], ...langs.map(l => [l, 'lang'])];
+  if (hasLive) chips.push(['Só com site no ar', 'live']);
+  $('#filters').innerHTML = chips.map(([label, kind]) => {
+    const pressed = kind === 'lang' ? state.lang === label && !state.liveOnly : state.liveOnly;
+    return `<button class="chip" type="button" data-kind="${kind}" data-value="${esc(label)}" aria-pressed="${pressed}">${esc(label)}</button>`;
+  }).join('');
+}
+
+function renderList() {
+  const rows = state.items.map((it, i) => ({ it, i }))
+    .filter(({ it }) => state.liveOnly ? !!it.live : (state.lang === 'Todos' || it.lang === state.lang));
+  $('#repo-list').innerHTML = rows.length ? rows.map(({ it, i }) => `
+    <li class="row">
+      <div class="row-thumb">${topoSVG(it.name)}</div>
+      <div class="row-main">
+        <h4><a href="${esc(it.repo)}" target="_blank" rel="noopener">${esc(it.title)}</a></h4>
+        ${it.desc ? `<p class="desc">${esc(it.desc)}</p>` : ''}
+        <div class="meta">${metaLine(it, true)}</div>
+      </div>
+      <div class="row-actions">
+        ${it.live ? `<button class="btn btn-small" type="button" data-view="${i}">Ver ao vivo</button>` : ''}
+        <a class="btn btn-small" href="${esc(it.repo)}" target="_blank" rel="noopener">Código</a>
+      </div>
+    </li>`).join('') : `<li class="row"><p class="empty">Nenhum repositório com esse filtro.</p></li>`;
+}
+
+$('#filters').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return;
+  if (b.dataset.kind === 'live') { state.liveOnly = !state.liveOnly; }
+  else { state.lang = b.dataset.value; state.liveOnly = false; }
+  renderFilters(); renderList();
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   Visualizador (modal com o site ao vivo)
+   ═══════════════════════════════════════════════════════════════ */
+const viewer = $('#viewer'), vFrame = $('#viewer-frame'), vStage = $('#viewer-stage');
+function setDevice(d) {
+  vStage.dataset.device = d;
+  viewer.querySelectorAll('[data-device]').forEach(b => { if (b.closest('.seg')) b.setAttribute('aria-pressed', String(b.dataset.device === d)); });
+}
+function openViewer(it) {
+  if (!it || !it.live) return;
+  $('#viewer-title').textContent = it.title;
+  $('#viewer-host').textContent = it.host;
+  $('#viewer-open').href = it.live;
+  setDevice('desktop');
+  vFrame.src = it.live;
+  viewer.showModal();
+}
+function closeViewer() { viewer.close(); }
+viewer.addEventListener('close', () => { vFrame.src = 'about:blank'; });
+viewer.addEventListener('click', e => { if (e.target === viewer) closeViewer(); });
+$('#viewer-close').addEventListener('click', closeViewer);
+viewer.querySelector('.seg').addEventListener('click', e => { const b = e.target.closest('[data-device]'); if (b) setDevice(b.dataset.device); });
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-view]');
+  if (b) openViewer(state.items[+b.dataset.view]);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   Lattes, contato e textos fixos
+   ═══════════════════════════════════════════════════════════════ */
+function renderStatic() {
+  $('#lede').textContent = CONFIG.lede;
+  $('#s-place').textContent = CONFIG.place;
+  $('#hero-lattes').href = CONFIG.lattes.url;
+  $('#hero-github').href = `https://github.com/${CONFIG.github}`;
+  $('#lattes-link').href = CONFIG.lattes.url;
+  $('#lattes-id').textContent = 'ID Lattes ' + CONFIG.lattes.id;
+  $('#copyright').textContent = `© ${new Date().getFullYear()} ${CONFIG.name}`;
+
+  const groups = CONFIG.academic.filter(g => g.items && g.items.length);
+  $('#academic').innerHTML = groups.map(g => `
+    <div class="acad-group">
+      <h3 class="group">${esc(g.title)}</h3>
+      <ol class="entries">
+        ${g.items.map(it => `
+          <li class="entry">
+            <span class="entry-when">${esc(it.period || '')}</span>
+            <div>
+              <div class="entry-title">${it.link ? `<a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>` : esc(it.title)}</div>
+              ${it.place ? `<div class="entry-place">${esc(it.place)}</div>` : ''}
+              ${it.detail ? `<p class="entry-detail">${esc(it.detail)}</p>` : ''}
+            </div>
+          </li>`).join('')}
+      </ol>
+    </div>`).join('');
+
+  const contacts = [];
+  if (CONFIG.email) contacts.push([CONFIG.email, 'E-mail', 'mailto:' + CONFIG.email]);
+  contacts.push([`github.com/${CONFIG.github}`, 'Código e projetos', `https://github.com/${CONFIG.github}`]);
+  contacts.push(['Currículo Lattes', 'Produção acadêmica', CONFIG.lattes.url]);
+  if (CONFIG.linkedin) contacts.push(['LinkedIn', 'Trajetória profissional', CONFIG.linkedin]);
+  $('#contact-list').innerHTML = contacts.map(([label, hint, href]) =>
+    `<li><a href="${esc(href)}"${href.startsWith('mailto:') ? '' : ' target="_blank" rel="noopener"'}>${esc(label)}<small>${esc(hint)}</small></a></li>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Início
+   ═══════════════════════════════════════════════════════════════ */
+(async function init() {
+  renderStatic();
+  const { repos, source, t } = await loadRepos();
+  state.items = buildItems(repos);
+
+  const liveCount = state.items.filter(i => i.live).length;
+  const n = state.items.length;
+  $('#stats').textContent = `${n} ${n === 1 ? 'repositório público' : 'repositórios públicos'}, ${liveCount} com site no ar.`;
+
+  if (source === 'fallback') {
+    $('#notice').innerHTML = `<p class="notice" role="status">Não consegui falar com o GitHub agora (a API limita as requisições por rede). Esta é a última lista conhecida, sem as prévias. Recarregue daqui a pouco ou veja direto em <a href="https://github.com/${esc(CONFIG.github)}" target="_blank" rel="noopener">github.com/${esc(CONFIG.github)}</a>.</p>`;
+    $('#sync').textContent = 'Lista de reserva';
+  } else {
+    $('#sync').textContent = `Dados do GitHub, sincronizados ${ago(t)}`;
+  }
+
+  renderLive(); renderFilters(); renderList();
+})();
+</script>
+</body>
+</html>
